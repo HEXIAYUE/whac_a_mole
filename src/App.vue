@@ -18,6 +18,11 @@ export default {
 </script>
 
 <style lang="scss">
+html,body{
+    max-height: 100vh;
+    margin:0;
+    padding:0;
+}
 #app {
     height: 100vh;
     max-width: 100vw;
@@ -27,7 +32,7 @@ export default {
     position: relative;
     overflow: hidden;
     .home {
-        padding-top: 50px;
+        padding-top: 30px;
     }
 
     .footer {

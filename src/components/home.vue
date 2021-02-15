@@ -3,9 +3,18 @@
         <header>
             <audio src="../assets/1.mp3" ref="audio"></audio>
             <div>
-                <el-button type="primary" size="small" round @click="startGame" :disabled="isClick">开始游戏</el-button>
-                <span><i class="el-icon-s-flag"></i>分数: {{count}}</span>
-                <span><i class="el-icon-time"></i>倒计时: {{time}} S</span>
+                <div>
+                    <el-button type="primary" size="small" round @click="startGame" :disabled="isClick">开始游戏</el-button>
+                    <el-select v-model="level" placeholder="难度选择" @change="changelevel">
+                        <el-option v-for="item in levelOptions" :key="item.value" :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div>
+                    <span><i class="el-icon-s-flag"></i>分数: {{count}}</span>
+                    <span><i class="el-icon-time"></i>倒计时: {{time}} S</span>
+                </div>
             </div>
         </header>
         <div class="row" v-for="y in size[1]" :key="y">
@@ -17,11 +26,12 @@
 </template>
 
 <script>
-import { Button } from 'element-ui';
+import { Button, Select } from 'element-ui';
 export default {
     name: 'home',
     components: {
-        elButton: Button
+        elButton: Button,
+        elSelect: Select
     },
     data () {
         return {
@@ -31,7 +41,23 @@ export default {
             count: 0, // 分数
             time: 30, // 游戏倒计时 s
             timerId: null, // 倒计时定时器的值
-            isClick: false // 是否能点击开始游戏按钮
+            isClick: false, // 是否能点击开始游戏按钮
+            level: null, // 难度等级
+            levelOptions: [
+                {
+                    label: '低难度',
+                    value: 0
+                },
+                {
+                    label: '中难度',
+                    value: 1
+                },
+                {
+                    label: '高难度',
+                    value: 2
+                }
+            ],
+            speed: null // 地鼠出现的速度
         };
     },
     mounted () {
@@ -49,7 +75,7 @@ export default {
         // 初始化
         ready () {
             this.randomSite();
-            this.mouseId = setInterval(this.randomSite, 1500);
+            this.mouseId = setInterval(this.randomSite, this.speed);
         },
         // 渲染地鼠图片
         isShow (x, y) {
@@ -66,6 +92,8 @@ export default {
             this.timerId = setInterval(() => {
                 this.time--;
                 if (this.time === 0) {
+                    // 地鼠位置设为空
+                    this.site = [];
                     // 弹出游戏结束提示
                     this.$message({
                         message: '游戏结束',
@@ -75,8 +103,6 @@ export default {
                     });
                     clearInterval(this.mouseId);
                     clearInterval(this.timerId);
-                    // 地鼠位置设为空
-                    this.site = [];
                     this.isClick = false;
                 }
             }, 1000);
@@ -108,9 +134,27 @@ export default {
             });
             this.time = 30;
             this.count = 0;
+            this.changelevel();
             this.ready();
             this.spendTime();
             this.isClick = true;
+        },
+        // 改变游戏难度
+        changelevel (val) {
+            switch (val) {
+            case 0:
+                this.speed = 1500;
+                break;
+            case 1:
+                this.speed = 1000;
+                break;
+            case 2:
+                this.speed = 500;
+                break;
+            default:
+                this.speed = 1500;
+                break;
+            }
         }
     }
 };
@@ -127,10 +171,16 @@ export default {
         margin-bottom: 40px;
         padding-left: 5px;
 
-        > div {
+        > div div {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-top: 5px;
+        }
+        .el-input__inner {
+            width: 150px !important;
+            height: 35px !important;
+            line-height: 35px !important;
         }
     }
 
