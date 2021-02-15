@@ -1,24 +1,11 @@
-# whac_a_mole
+## 打地鼠游戏-禾下月/ [小小窝](https://hxyxyz.top)
+### 展示网站：https://dds.hxyxyz.top
+### @v1.0 2021.12.15
+ 1.已完成倒计时功能
+ <br>
+ 2.积分计数功能完成
+ <br>
+ 3.添加了打击音效
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+ ### @v1.0 2021.12.15
+ 1.适配移动端
