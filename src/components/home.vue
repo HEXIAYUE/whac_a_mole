@@ -19,7 +19,7 @@
         </header>
         <div class="row" v-for="y in size[1]" :key="y">
             <div class="box" v-for="x in size[0]" :key="x" @click.stop.prevent="hitGround(x,y)">
-                <img v-show="isShow(x,y)" src="../assets/3.jpg" />
+                <img v-show="isShow(x,y)" :src="imgSrc" />
             </div>
         </div>
     </div>
@@ -39,7 +39,7 @@ export default {
             mouseId: null, // 地鼠随机出现定时器的值
             site: [], // 地鼠出现的位置
             count: 0, // 分数
-            time: 30, // 游戏倒计时 s
+            time: 45, // 游戏倒计时 s
             timerId: null, // 倒计时定时器的值
             isClick: false, // 是否能点击开始游戏按钮
             level: null, // 难度等级
@@ -57,7 +57,11 @@ export default {
                     value: 2
                 }
             ],
-            speed: null // 地鼠出现的速度
+            speed: 1500, // 地鼠出现的速度
+            // 地鼠图片
+            imgList: [require('../assets/3.jpg'), require('../assets/5.jpg')],
+            // 当前地鼠的图片
+            imgSrc: null
         };
     },
     mounted () {
@@ -74,8 +78,12 @@ export default {
     methods: {
         // 初始化
         ready () {
-            this.randomSite();
-            this.mouseId = setInterval(this.randomSite, this.speed);
+            // 倒计时结束 不能调用函数
+            if (this.time > 0) {
+                this.imgSrc = this.imgList[0];
+                this.randomSite();
+                this.mouseId = setInterval(this.randomSite, this.speed);
+            }
         },
         // 渲染地鼠图片
         isShow (x, y) {
@@ -94,6 +102,9 @@ export default {
                 if (this.time === 0) {
                     // 地鼠位置设为空
                     this.site = [];
+                    clearInterval(this.mouseId);
+                    clearInterval(this.timerId);
+                    this.isClick = false;
                     // 弹出游戏结束提示
                     this.$message({
                         message: '游戏结束',
@@ -101,26 +112,31 @@ export default {
                         center: true,
                         duration: 1000
                     });
-                    clearInterval(this.mouseId);
-                    clearInterval(this.timerId);
-                    this.isClick = false;
                 }
             }, 1000);
         },
         // 打击地鼠
         hitGround (x, y) {
             // 打中地鼠
-            if (this.site[0] === x && this.site[1] === y) {
+            if (this.site[0] === x && this.site[1] === y && this.time > 0) {
+                //  增加分数
+                this.count++;
+                // 切换为打中地鼠的图片
+                this.imgSrc = this.imgList[1];
+                console.log(this.imgSrc);
                 // 产生音效
                 this.$refs.audio.play();
-                //  延迟下 使音效和动作能衔接好
+                // 暂停循环
+                clearInterval(this.mouseId);
+                // 地鼠位置置为空 延迟为了展示被击中的动画
                 setTimeout(() => {
-                    //  增加分数
-                    this.count++;
+                    this.site = [];
+                }, 300);
+                //  延迟下 使音效和动作能衔接好 随机时间出现下次地鼠
+                setTimeout(() => {
                     // 重置地鼠位置和地鼠刷新时间
-                    clearInterval(this.mouseId);
                     this.ready();
-                }, 200);
+                }, (Math.random() + 1) * 1000);
             }
         },
         // 开始游戏
@@ -132,9 +148,9 @@ export default {
                 center: true,
                 duration: 1000
             });
-            this.time = 30;
+            // 初始化时间和分数
+            this.time = 45;
             this.count = 0;
-            this.changelevel();
             this.ready();
             this.spendTime();
             this.isClick = true;
