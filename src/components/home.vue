@@ -18,7 +18,9 @@
             </div>
         </header>
         <div class="row" v-for="y in size[1]" :key="y">
-            <div class="box" v-for="x in size[0]" :key="x" @click.stop.prevent="hitGround(x,y)">
+            <!--在老鼠被击中时 不能触发点击事件-->
+            <div class="box" v-for="x in size[0]" :key="x"
+                @click.stop.prevent="imgSrc !== imgList[1] && hitGround(x,y)">
                 <img v-show="isShow(x,y)" :src="imgSrc" />
             </div>
         </div>
@@ -117,13 +119,12 @@ export default {
         },
         // 打击地鼠
         hitGround (x, y) {
-            // 打中地鼠
+            // 打中地鼠 并且地鼠要出来
             if (this.site[0] === x && this.site[1] === y && this.time > 0) {
                 //  增加分数
                 this.count++;
                 // 切换为打中地鼠的图片
                 this.imgSrc = this.imgList[1];
-                console.log(this.imgSrc);
                 // 产生音效
                 this.$refs.audio.play();
                 // 暂停循环
